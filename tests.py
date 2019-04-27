@@ -1,3 +1,7 @@
+"""
+Tests for WSGI Calculator
+"""
+
 import unittest
 import subprocess
 import http.client
