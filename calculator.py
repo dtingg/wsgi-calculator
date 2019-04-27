@@ -15,11 +15,12 @@ def index():
     """
     body = """
     You can use this website to add, subtract, multiply, or divide numbers.<br>
-    Change the url to specify the function and numbers that you want to use.<br><br>
-    Here are some examples:<br><br>
+    Change the url to specify the function and numbers that you want to use.<br>
+    You can enter two or more numbers.<br><br>
+    Here are some examples:<br>
 <table class="table table-hover">
   <thead>
-    <tr class="table-active">
+    <tr class="table-secondary">
       <th scope="col">Function</th>
       <th scope="col">Numbers</th>
       <th scope="col">URL</th>
@@ -33,13 +34,13 @@ def index():
     </tr>
     <tr class="table-danger">
       <th scope="row">Subtract</th>
-      <td>8 - 1</td>
-      <td><a href=http://localhost:8080/subtract/8/1>http://localhost:8080/subtract/8/1</a></td>
+      <td>10 - 8 - 1</td>
+      <td><a href=http://localhost:8080/subtract/10/8/1>http://localhost:8080/subtract/10/8/1</a></td>
     </tr>
     <tr class="table-info">
       <th scope="row">Multiply</th>
-      <td>2 * 5</td>
-      <td><a href=http://localhost:8080/multiply/2/5>http://localhost:8080/multiply/2/5</a></td>
+      <td>2 * 5 * 3</td>
+      <td><a href=http://localhost:8080/multiply/2/5/3>http://localhost:8080/multiply/2/5/3</a></td>
     </tr>
     <tr class="table-warning">
       <th scope="row">Divide</th>
@@ -55,7 +56,7 @@ def index():
 def add(*args):
     """Returns a string with the sum of the arguments"""
     nums = map(int, args)
-    total = sum(nums)
+    total = reduce(operator.add, nums)
 
     return str(total)
 
@@ -109,6 +110,10 @@ def resolve_path(path):
 
     try:
         func = funcs[func_name]
+
+        if func != index and len(args) <= 1:
+            raise ValueError
+
     except KeyError:
         raise NameError
 
@@ -181,15 +186,19 @@ def application(environ, start_response):
 
     except NameError:
         status = "404 Not Found"
-        body = card_template().format("#f8d7da", "Error", "Not Found")
+        body = card_template().format("#f8d7da", "Error", "I don't know how to do that!")
 
     except ZeroDivisionError:
         status = "400 Bad Request"
         body = card_template().format("#f8d7da", "Error", "Can't divide by zero")
 
+    except ValueError:
+        status = "403 Forbidden"
+        body = card_template().format("#f8d7da", "Error", "Please enter two or more numbers")
+
     except Exception:
         status = "500 Internal Server Error"
-        body = card_template().format("f8d7da", "Error", "Internal Server Error")
+        body = card_template().format("#f8d7da", "Error", "Internal Server Error")
         print(traceback.format_exc())
 
     finally:
