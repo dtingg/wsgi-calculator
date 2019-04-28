@@ -83,6 +83,7 @@ def divide(*args):
 
     try:
         total = reduce(operator.truediv, nums)
+
     except ZeroDivisionError:
         raise ZeroDivisionError
 
@@ -193,7 +194,7 @@ def application(environ, start_response):
         body = card_template().format("#f8d7da", "Error", "Can't divide by zero")
 
     except ValueError:
-        status = "403 Forbidden"
+        status = "400 Bad Request"
         body = card_template().format("#f8d7da", "Error", "Please enter two or more numbers")
 
     except Exception:
